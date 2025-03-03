@@ -189,6 +189,10 @@ def load_file(file_name: str):
     Returns:
         mne.io.Raw or mne.BaseEpochs: MNE data object.
     """
+    extension = file_name.split(".")[-1]
+    if extension == 'vhdr':
+        return mne.io.read_raw_brainvision(file_name, verbose=False)
+
     try:
         data = mne.io.read_raw(file_name, verbose=False)
     except TypeError:
