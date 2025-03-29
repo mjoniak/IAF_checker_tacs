@@ -1,0 +1,15 @@
+browse_directory: tacs/
+eeg_file_type: vhdr
+file_choice: list # Options:
+                  #   list: automatically choose files by name from not analysed
+                  #   random: choose random file not analysed
+                  #   choice: browser folder to choose file
+
+results_file: results/tacs_results.csv
+user_list: ["u1"]
+
+crop_data: {beginning: 0, end: 100} # in s
+iaf_range: [7, 14] # in Hz
+channels: ["O1", "O2", "Pz", "P3", "P4"]
+
+psd_draw_range: {min: 2, max: 30}

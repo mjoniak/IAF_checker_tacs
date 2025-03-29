@@ -506,7 +506,7 @@ def main():
     register_callbacks(app=app)
 
     webbrowser.open('http://127.0.0.1:8050/')
-    app.run_server(debug=True, use_reloader=False)
+    app.run(debug=True, use_reloader=False)
 
 
 if __name__ == '__main__':
