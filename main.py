@@ -228,7 +228,7 @@ def calculate_iaf_from_list(list_of_iaf: List[Optional[float]]) -> Tuple[Optiona
     return iaf, certainty
 
 
-def iaf_for_epochs(data, config):
+def iaf_for_epochs(data: mne.BaseEpochs, config: Dict):
     """
     Calculate IAF for each epoch in the EEG data and return the IAF and certainty.
 
@@ -242,12 +242,13 @@ def iaf_for_epochs(data, config):
     list_of_raw = []
     list_of_iaf = []
     freq = data.info["sfreq"]
+    resolution = config.get("iaf_resolution", 0.25)
     for epoch_data in data:
         res = mne.io.RawArray(epoch_data, data.info, verbose=False)
         res = res.crop(config["crop_data"]["beginning"], len(res) / freq - config["crop_data"]["end"], verbose=False)
         # Suppress output from savgol_iaf
         with contextlib.redirect_stdout(io.StringIO()):
-            iaf = savgol_iaf(res, fmin=config["iaf_range"][0], fmax=config["iaf_range"][1], ax=False)
+            iaf = savgol_iaf(res, fmin=config["iaf_range"][0], fmax=config["iaf_range"][1], ax=False, resolution=resolution)
 
         list_of_iaf.append(iaf[0])
         list_of_raw.append(res)
@@ -283,8 +284,9 @@ def calculate_iaf(file_name: str, config: Dict) -> Tuple[Optional[float], Option
         psds = np.mean(np.mean(data, axis=0), axis=0)
     elif isinstance(data, mne.io.BaseRaw):
         data = data.crop(config["crop_data"]["beginning"], len(data) / freq - config["crop_data"]["end"])
+        resolution = config.get("iaf_resolution", 0.25)
         with contextlib.redirect_stdout(io.StringIO()):
-            iaf = savgol_iaf(data, fmin=config["iaf_range"][0], fmax=config["iaf_range"][1], ax=False)[0]
+            iaf = savgol_iaf(data, fmin=config["iaf_range"][0], fmax=config["iaf_range"][1], ax=False, resolution=resolution)[0]
         certainty = None
         spectrum = data.compute_psd(method="welch", fmin=config["psd_draw_range"]["min"], fmax=config["psd_draw_range"]["max"])
         data, _ = spectrum.get_data(return_freqs=True)
